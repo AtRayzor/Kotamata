@@ -191,26 +191,26 @@ class PrecomputeLcaTableTests : ShouldSpec({
 
 
     private companion object {
-        val rootState = CompositeState<String, DataContext>(generateRandomId())
-        val stateObj1 = AtomicState<State1, DataContext>(State1)
-        val stateObj2 = AtomicState<State2, DataContext>(State2)
-        val stateObj3 = AtomicState<State3, DataContext>(State3)
-        val stateObj4 = AtomicState<State4, DataContext>(State4)
+        val rootState = CompositeStateVertex<String, DataContext>(generateRandomId())
+        val stateObj1 = AtomicStateVertex<State1, DataContext>(State1)
+        val stateObj2 = AtomicStateVertex<State2, DataContext>(State2)
+        val stateObj3 = AtomicStateVertex<State3, DataContext>(State3)
+        val stateObj4 = AtomicStateVertex<State4, DataContext>(State4)
         val containerStateObj1 =
-            CompositeState<ContainerState1, DataContext>(ContainerState1)
+            CompositeStateVertex<ContainerState1, DataContext>(ContainerState1)
         val containerStateObj2 =
-            CompositeState<ContainerState2, DataContext>(ContainerState2)
+            CompositeStateVertex<ContainerState2, DataContext>(ContainerState2)
         val containerStateObj3 =
-            CompositeState<ContainerState3, DataContext>(ContainerState3)
+            CompositeStateVertex<ContainerState3, DataContext>(ContainerState3)
         val containerStateObj4 =
-            CompositeState<ContainerState4, DataContext>(ContainerState4)
+            CompositeStateVertex<ContainerState4, DataContext>(ContainerState4)
         val containerStateObj5 =
-            CompositeState<ContainerState5, DataContext>(ContainerState5)
-        val region = Region.create()
+            CompositeStateVertex<ContainerState5, DataContext>(ContainerState5)
+        val region = RegionAtom.create()
 
-        fun createSmallGraph(): HiGraph {
+        fun createSmallGraph(): HierarchicalGraph {
             val graph =
-                MutableHiGraph(rootState = (rootState as CompositeState<String, Any?>))
+                MutableXHiGraph(rootState = (rootState as CompositeStateVertex<String, Any?>))
             val compositeState1Node = graph.addCompositeStateNode(
                 containerStateObj1,
                 rootState,
@@ -225,21 +225,21 @@ class PrecomputeLcaTableTests : ShouldSpec({
 
             graph.addOrNode(
                 stateObj1,
-                compositeState1Node.payload as CompositeState<Any, Any?>,
+                compositeState1Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
             graph.addOrNode(
                 stateObj2,
-                compositeState1Node.payload as CompositeState<Any, Any?>,
+                compositeState1Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
 
             return graph
         }
 
-        fun createLargeGraph(): HiGraph {
+        fun createLargeGraph(): HierarchicalGraph {
             val graph =
-                MutableHiGraph(rootState = (rootState as CompositeState<String, Any?>))
+                MutableXHiGraph(rootState = (rootState as CompositeStateVertex<String, Any?>))
             val compositeState1Node = graph.addCompositeStateNode(
                 containerStateObj1,
                 rootState,
@@ -252,39 +252,39 @@ class PrecomputeLcaTableTests : ShouldSpec({
             )
             val compositeState3Node = graph.addCompositeStateNode(
                 containerStateObj3,
-                compositeState1Node.payload as CompositeState<Any, Any?>,
+                compositeState1Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
             val compositeState4Node = graph.addCompositeStateNode(
                 containerStateObj4,
-                compositeState1Node.payload as CompositeState<Any, Any?>,
+                compositeState1Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
             val compositeState5Node = graph.addCompositeStateNode(
                 containerStateObj5,
-                compositeState3Node.payload as CompositeState<Any, Any?>,
+                compositeState3Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
             graph.addOrNode(
                 stateObj1,
-                compositeState5Node.payload as CompositeState<Any, Any?>,
+                compositeState5Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
 
             graph.addOrNode(
                 stateObj2,
-                compositeState4Node.payload as CompositeState<Any, Any?>,
+                compositeState4Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
             graph.addOrNode(
                 stateObj3,
-                compositeState4Node.payload as CompositeState<Any, Any?>,
+                compositeState4Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
 
             graph.addOrNode(
                 stateObj4,
-                compositeState2Node.payload as CompositeState<Any, Any?>,
+                compositeState2Node.payload as CompositeStateVertex<Any, Any?>,
                 region
             )
 

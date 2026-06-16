@@ -1,0 +1,116 @@
+\documentclass{beamer}
+\usetheme{default}
+
+\title{State Machine Formulation}
+\author{Tim Ray}
+\begin{document}
+\begin{frame}[plain]
+    \maketitle
+\end{frame}
+\begin{frame}
+    \frametitle{State Machine}
+    \[ M = (S, s_0, E, \Sigma, T) \]
+    \begin{itemize}
+    		\item { $S$: state set}
+    		\item { $s_0$: initial state }
+    		\item { $E$: event set }
+    		\item { $\Sigma$: data context}
+    		\item { $T$: transitions}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Transitions Set}
+    \[ T \subseteq S \times E \times G \times A \times S \]
+    \begin{itemize}
+        	\item { $T$: transition set}
+    		\item { $S$: state set}
+    		\item { $E$: event set }
+    		\item { $G$: guard functions }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Transition Instance}
+    \[ t = (s_i, \tau, g, a, s_{i+1}) \]
+    \begin{itemize}
+        	\item { $t$: transition}
+    		\item { $s_i \in S$: source state }
+    		\item { $\tau \in E$: trigger event }
+    		\item { $g \in G$: guard function }
+    		\item { $a \in A$: guard functions }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Guard and Action Function}
+    \[ g: \Sigma \rightarrow \mathbb{B}\]
+    \[ a: \Sigma \rightarrow \Sigma \times \Omega \]
+        \begin{itemize}
+        	\item { $\mathbb{B} = \{ false, true \}$  }
+    		\item { $\Omega$: set of side effects }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Complex state machine}
+    \[ M_C = (C, v_0, E, \Sigma, H) \]
+    \begin{itemize}
+    		\item { $C$: current configuration}
+    		\item { $v_0$: initial vertex }
+    		\item { $E$: event set }
+    		\item { $\Sigma$: data context}
+    		\item { $H$: hyper-transitions }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{ Hyper transition }
+    \[ H = (\rho, \tau, \phi, \alpha ) \]
+    \begin{itemize}
+    		\item { $H$: hyper-transition }
+    		\item { $\rho $: hyper edge  }
+    		\item { $\tau \in E$: trigger event }
+    		\item { $\phi$: reduction function }
+    		\item { $\alpha$: complex action }
+    \end{itemize}
+\end{frame}
+
+\newcommand{\powset}{\mathcal{P}}
+\newcommand{\Rho}{\mathrm{P}}
+\newcommand{\Rhobar}{\overline{\Rho}}
+\newcommand{\rhobar}{\overline{\rho}}
+\newcommand{\Vbar}{\overline{V}}
+
+
+\begin{frame}
+    \frametitle{ Selector Function }
+    \[ \phi: \powset(V) \times \powset(V) \rightarrow \powset(V) \times \powset(V) \]
+    
+        \[  (V_S, V_T) \rightarrow (\Vbar_S, \Vbar_T), \Vbar_S \subseteq V_S \land \Vbar_T \subseteq V_T  \]
+        
+           \[  v_s \in V_s \land \overline{V}_T \subseteq V_T \]
+        
+\end{frame}
+
+\begin{frame}
+    \frametitle{ Transition Activity Function }
+    
+   \[ \alpha: \overline{\mathrm{P}} \times E \times \Sigma \times C \rightarrow \Sigma \times C \times \Omega \]
+   
+   \[ \Rhobar = \{ \rhobar \;|\; \rhobar = (\Vbar_S, \overline{V}_T) \land \Vbar_S,\, \Vbar_T \in  \powset(V) \} \]\\\      
+        
+\end{frame}
+
+\begin{frame}
+    \frametitle{ Parallel Execution Context }
+    
+   
+   \[ \widetilde{\alpha} = \phi \times \Lambda \]
+
+        
+\end{frame}
+
+\end{document}
+
+

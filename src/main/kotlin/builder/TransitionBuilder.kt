@@ -1,46 +1,89 @@
 package dev.timray.kotomata.builder
 
+import dev.timray.kotomata.builder.vertices.CompletionTransitionDeclaration
+import dev.timray.kotomata.builder.vertices.SelfTransitionDeclaration
+import dev.timray.kotomata.builder.vertices.TransitionDeclaration
+import dev.timray.kotomata.builder.vertices.TriggeredTransitionDeclaration
 import dev.timray.kotomata.model.Event
+import kotlin.reflect.KClass
+
+sealed interface TransitionBuilder<S : Any, E : Event>
+
+sealed interface TargetedTransitionBuilder<S : Any, T : Any, E : Event> :
+    TransitionBuilder<S, E>
 
 
-interface Selection<T: Any> {
-    val target: T
+sealed interface SelfTransitionBuilder<S : Any, E : Event> :
+    TransitionBuilder<S, E>
+
+sealed interface CompletionTransitionBuilder<S : Any>
+sealed interface TargetedCompletionTransitionBuilder<S : Any, T : Any> :
+    CompletionTransitionBuilder<S>
+
+
+internal sealed interface TransitionDeclarationSource {
+    val declaration: TransitionDeclaration
 }
 
-internal data class SelectionImpl<T: Any, C>(
-    override val target: T,
-    val action: ((C) -> C)? = null,
-) : Selection<T>
+internal class TransitionBuilderImpl<S : Any, E : Event>(
+    val source: S,
+    val eventClass: KClass<E>
+) : TransitionBuilder<S, E>
 
+internal class TargetedTransitionBuilderImpl<S : Any, T : Any, E : Event>(
+    source: S,
+    target: T,
+    eventClass: KClass<E>
+) : TargetedTransitionBuilder<S, T, E>, TransitionDeclarationSource {
+    override var declaration: TriggeredTransitionDeclaration =
+        TriggeredTransitionDeclaration(
+            source = source,
+            target = target,
+            triggerEventClass = eventClass as KClass<Event>
+        )
+        private set
 
-class ChoiceBuilderScope<C> internal constructor() {
-    fun <T: Any> select(target: T): Selection<T> = SelectionImpl<T, C>(target)
+    fun update(updater: (TriggeredTransitionDeclaration) -> TriggeredTransitionDeclaration): TargetedTransitionBuilder<S, T, E> {
+        declaration = updater(declaration)
 
-    infix fun <T: Any> Selection<T>.withAction(action: (C) -> C): Selection<T> =
-        (this as SelectionImpl<T, C>).copy(action = action)
-}
-
-
-interface TransitionBuilder<S: Any, C,  E: Event> {
-    infix fun <T: Any> target(target: T): TransitionContinuationBuilder
-
-    infix fun <T: Any> choose(selector: ChoiceBuilderScope<C>): TransitionContinuationBuilder
-}
-
-
-
-
-interface TransitionContinuationBuilder  {
-    fun target() {
+        return this
     }
 }
 
-internal class TransitionBuilderImpl<S: Any, C, E: Event>: TransitionBuilder<S, C, E> {
-    override fun <T : Any> target(target: T): TransitionContinuationBuilder {
-        TODO("Not yet implemented")
-    }
+internal class SelfTransitionBuilderImpl<S : Any, E : Event>(
+    source: S,
+    eventClass: KClass<E>
+) : SelfTransitionBuilder<S, E>,
+    TransitionDeclarationSource {
+    override var declaration: SelfTransitionDeclaration =
+        SelfTransitionDeclaration(source, eventClass as KClass<Event>)
 
-    override fun <T : Any> choose(selector: ChoiceBuilderScope<C>): TransitionContinuationBuilder {
-        TODO("Not yet implemented")
+
+    fun update(updater: (SelfTransitionDeclaration) -> SelfTransitionDeclaration): SelfTransitionBuilder<S, E> {
+        declaration = updater(declaration)
+
+        return this
+    }
+}
+
+internal data class CompletionTransitionBuilderImpl<S : Any>(val source: S) :
+    CompletionTransitionBuilder<S>
+
+internal class TargetedCompletionTransitionBuilderImpl<S : Any, T : Any>(
+    source: S,
+    target: T,
+) : TargetedCompletionTransitionBuilder<S, T>, TransitionDeclarationSource {
+
+    override var declaration: CompletionTransitionDeclaration =
+        CompletionTransitionDeclaration(
+            source = source,
+            target = target,
+        )
+        private set
+
+    fun update(updater: (CompletionTransitionDeclaration) -> CompletionTransitionDeclaration): TargetedCompletionTransitionBuilder<S, T> {
+        declaration = updater(declaration)
+
+        return this
     }
 }
